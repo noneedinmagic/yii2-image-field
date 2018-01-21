@@ -34,28 +34,6 @@ class ImageFieldBehavior extends AttributeBehavior
 		];
 	}
 
-	// public function beforeValidate($event){
-	//     if(empty($this->owner->{$this->fileAttribute})){
-	//         if (Yii::$app->request->isPost) {
-	//             $this->owner->{$this->fileAttribute} = UploadedFile::getInstance($this->owner, $this->fileAttribute);
-	//             if($this->owner->{$this->fileAttribute}){
-	//                 if(!empty($this->owner->{$this->filenameAttribute})){
-	//                     $this->afterDelete(NULL);
-	//                 }
-	//                 $this->owner->{$this->filenameAttribute} = Yii::$app->security->generateRandomString($this->filenameLength) . '.' . $this->owner->{$this->fileAttribute}->extension;
-	//                 return TRUE;
-	//             }
-	//         }
-	//     } elseif($this->owner->{$this->fileAttribute} instanceof UploadedFile){
-	//         if(!empty($this->owner->{$this->filenameAttribute})){
-	//             $this->afterDelete(NULL);
-	//         }
-	//         $this->owner->{$this->filenameAttribute} = Yii::$app->security->generateRandomString($this->filenameLength) . '.' . $this->owner->{$this->fileAttribute}->extension;
-	//         return TRUE;
-	//     }
-	//     return FALSE;
-	// }
-
 	protected function _getFile(){
 		return $this->owner->{$this->fileAttribute};
 	}
@@ -69,20 +47,6 @@ class ImageFieldBehavior extends AttributeBehavior
 		$this->owner->{$this->filenameAttribute} = $value;
 	}
 
-	// public function beforeValidate($event){
-	// 	if(empty($this->owner->{$this->fileAttribute}) && Yii::$app->request->isPost){
-	// 		$this->owner->{$this->fileAttribute} = UploadedFile::getInstance($this->owner, $this->fileAttribute);
-	// 	}
-
-	// 	if($this->owner->{$this->fileAttribute} instanceof UploadedFile){
-	// 		if(!empty($this->owner->{$this->filenameAttribute})){
-	// 			$this->afterDelete(NULL);
-	// 		}
-	// 		$this->owner->{$this->filenameAttribute} = Yii::$app->security->generateRandomString($this->filenameLength) . '.' . $this->owner->{$this->fileAttribute}->extension;
-	// 		return TRUE;
-	// 	}
-	// 	return FALSE;
-	// }
 	public function beforeValidate($event){
 		if(empty($this->_getFile()) && Yii::$app->request->isPost){
 			$this->_setFile(UploadedFile::getInstance($this->owner, $this->fileAttribute));
@@ -92,19 +56,12 @@ class ImageFieldBehavior extends AttributeBehavior
 			if(!empty($this->_getFilename())){
 				$this->afterDelete(NULL);
 			}
-			$this->setFilename(Yii::$app->security->generateRandomString($this->filenameLength) . '.' . $this->_getFile()->extension);
+			$this->_setFilename(Yii::$app->security->generateRandomString($this->filenameLength) . '.' . $this->_getFile()->extension);
 			return TRUE;
 		}
 		return FALSE;
 	}
 
-	// public function beforeSave($event){
-	// 	if (!empty($this->owner->{$this->fileAttribute}) && BaseFileHelper::createDirectory(Yii::getAlias($this->imageStorePath))) {
-	// 		return $this->owner->{$this->fileAttribute}->saveAs($this->imageOriginalPath());
-	// 	} else {
-	// 		return false;
-	// 	}
-	// }
 	public function beforeSave($event){
 		if (!empty($this->_getFile()) && BaseFileHelper::createDirectory(Yii::getAlias($this->imageStorePath))) {
 			return $this->_getFile()->saveAs($this->imageOriginalPath());
@@ -128,19 +85,11 @@ class ImageFieldBehavior extends AttributeBehavior
 			Yii::getAlias($this->imagePath($options))));
 	}
 
-	// public function imageOriginalPath()
-	// {
-	// 	return Yii::getAlias($this->imageStorePath . '/' . $this->owner->{$this->filenameAttribute});
-	// }
 	public function imageOriginalPath()
 	{
 		return Yii::getAlias($this->imageStorePath . '/' . $this->_getFilename());
 	}
 
-	// protected function imageCachePath()
-	// {
-	// 	return Yii::getAlias($this->imageCachePath .'/'. substr($this->owner->{$this->filenameAttribute}, 0, 1) .'/'. substr($this->owner->{$this->filenameAttribute}, 0, 2) .'/'. $this->owner->{$this->filenameAttribute} .'/');
-	// }
 	protected function imageCachePath()
 	{
 		return Yii::getAlias($this->imageCachePath .'/'. substr($this->_getFilename(), 0, 1) .'/'. substr($this->_getFilename(), 0, 2) .'/'. $this->_getFilename() .'/');
