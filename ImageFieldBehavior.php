@@ -25,6 +25,35 @@ class ImageFieldBehavior extends AttributeBehavior
 	public $imageCachePath;
 	public $imageDefaultUrl;
 
+	protected $_file = null;
+	protected function _getFile(){
+		// return $this->owner->{$this->fileAttribute};
+		return $this->_file;
+	}
+	protected function _setFile($value){
+		// $this->owner->{$this->fileAttribute} = $value;
+		$this->_file = $value;
+	}
+	public function __get($name){
+		return $name === $this->fileAttribute ? $this->_file : parent::__get($name);
+	}
+	public function __set($name, $value){
+		return $name === $this->fileAttribute ? ($this->_file = $value) : parent::__set($name, $value);
+	}
+	public function canGetProperty($name, $checkVars = true){
+		return $name === $this->fileAttribute || parent::canGetProperty($name, $checkVars);
+	}
+	public function canSetProperty($name, $checkVars = true){
+		return $name === $this->fileAttribute || parent::canSetProperty($name, $checkVars);
+	}
+
+	protected function _getFilename(){
+		return $this->owner->{$this->filenameAttribute};
+	}
+	protected function _setFilename($value){
+		$this->owner->{$this->filenameAttribute} = $value;
+	}
+
 	public function events(){
 		return [
 			ActiveRecord::EVENT_BEFORE_VALIDATE => 'beforeValidate',
@@ -32,19 +61,6 @@ class ImageFieldBehavior extends AttributeBehavior
 			ActiveRecord::EVENT_BEFORE_UPDATE => 'beforeSave',
 			ActiveRecord::EVENT_AFTER_DELETE => 'afterDelete',
 		];
-	}
-
-	protected function _getFile(){
-		return $this->owner->{$this->fileAttribute};
-	}
-	protected function _setFile($value){
-		$this->owner->{$this->fileAttribute} = $value;
-	}
-	protected function _getFilename(){
-		return $this->owner->{$this->filenameAttribute};
-	}
-	protected function _setFilename($value){
-		$this->owner->{$this->filenameAttribute} = $value;
 	}
 
 	public function beforeValidate($event){
