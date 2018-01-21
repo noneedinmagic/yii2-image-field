@@ -35,10 +35,10 @@ class ImageFieldBehavior extends AttributeBehavior
 		$this->_file = $value;
 	}
 	public function __get($name){
-		return $name === $this->fileAttribute ? $this->_file : parent::__get($name);
+		return $name === $this->fileAttribute ? $this->_getFile() : parent::__get($name);
 	}
 	public function __set($name, $value){
-		return $name === $this->fileAttribute ? ($this->_file = $value) : parent::__set($name, $value);
+		return $name === $this->fileAttribute ? $this->_setFile($value) : parent::__set($name, $value);
 	}
 	public function canGetProperty($name, $checkVars = true){
 		return $name === $this->fileAttribute || parent::canGetProperty($name, $checkVars);
